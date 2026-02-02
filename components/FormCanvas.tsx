@@ -112,21 +112,34 @@ export const FormCanvas: React.FC<FormCanvasProps> = ({ formDef, onSaveConfig })
         const customerName = prompt("Enter Customer Name for the file:");
         if (!customerName) return;
 
-        const dateStr = new Date().toLocaleDateString('en-US'); // M/D/YYYY format
+        // Replace slashes with dashes for better filename compatibility
+        const dateStr = new Date().toLocaleDateString('en-US').replace(/\//g, '-');
         const fileName = `${customerName} - ${dateStr}.pdf`;
 
         try {
+            console.log("Attempting login...");
             const token = await login(clientId);
-            const blob = await generatePDFBlob();
-            if (blob && token) {
-                await uploadFile(blob, fileName, token, folderId);
-                alert("Uploaded to Drive Successfully!");
-            } else {
-                alert("Failed to prepare file or login.");
+            if (!token) {
+                alert("Login failed or no token received.");
+                return;
             }
+            console.log("Login successful, generating PDF...");
+
+            const blob = await generatePDFBlob();
+            if (!blob) {
+                alert("Failed to generate PDF. Check console for details.");
+                return;
+            }
+            console.log("PDF generated, uploading...");
+
+            await uploadFile(blob, fileName, token, folderId);
+            alert("Uploaded to Drive Successfully!");
+
         } catch (err) {
-            console.error(err);
-            alert("Upload failed: " + err);
+            console.error("Upload Process Error:", err);
+            // safe error string
+            const msg = err instanceof Error ? err.message : String(err);
+            alert("Upload failed: " + msg);
         }
     };
 
