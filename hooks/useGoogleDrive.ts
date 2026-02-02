@@ -75,13 +75,17 @@ export function useGoogleDrive() {
         });
     }, []);
 
-    const uploadFile = async (blob: Blob, filename: string, token: string) => {
+    const uploadFile = async (blob: Blob, filename: string, token: string, folderId?: string) => {
         setIsUploading(true);
         try {
-            const metadata = {
+            const metadata: any = {
                 name: filename,
                 mimeType: 'application/pdf',
             };
+
+            if (folderId) {
+                metadata.parents = [folderId];
+            }
 
             const formData = new FormData();
             formData.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));

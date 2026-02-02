@@ -104,13 +104,22 @@ export const FormCanvas: React.FC<FormCanvasProps> = ({ formDef, onSaveConfig })
 
     const handleUploadDrive = async () => {
         const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || prompt("Please enter your Google Client ID:");
+        // Optional: Get folder ID from env var
+        const folderId = process.env.NEXT_PUBLIC_GOOGLE_DRIVE_FOLDER_ID;
+
         if (!clientId) return;
+
+        const customerName = prompt("Enter Customer Name for the file:");
+        if (!customerName) return;
+
+        const dateStr = new Date().toLocaleDateString('en-US'); // M/D/YYYY format
+        const fileName = `${customerName} - ${dateStr}.pdf`;
 
         try {
             const token = await login(clientId);
             const blob = await generatePDFBlob();
             if (blob && token) {
-                await uploadFile(blob, `${formDef.name}_filled_${new Date().toISOString()}.pdf`, token);
+                await uploadFile(blob, fileName, token, folderId);
                 alert("Uploaded to Drive Successfully!");
             } else {
                 alert("Failed to prepare file or login.");
