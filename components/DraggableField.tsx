@@ -60,6 +60,16 @@ export const DraggableField: React.FC<DraggableFieldProps> = ({
         });
     }, [field.x, field.y, containerWidth, containerHeight]);
 
+    // Restore signature from data URL on mount (if available)
+    useEffect(() => {
+        if (field.type === 'signature' && typeof field.value === 'string' && field.value.startsWith('data:') && sigPad.current) {
+            // Only load if canvas is empty to avoid overwriting during active drawing if things re-render
+            if (sigPad.current.isEmpty()) {
+                sigPad.current.fromDataURL(field.value);
+            }
+        }
+    }, [field.type, field.value]);
+
     const handleStop = (e: DraggableEvent, data: DraggableData) => {
         if (isResizing) return;
         const newXPercent = (data.x / containerWidth) * 100;
@@ -121,9 +131,8 @@ export const DraggableField: React.FC<DraggableFieldProps> = ({
 
 
 
-        // For PDF generation stability, we render DIVs instead of INPUTs
-        // We exclude 'signature' because unmounting the canvas loses the drawing.
-        if (isGeneratingPdf && field.type !== 'signature') {
+        // For PDF generation stability, we render DIVs and IMAGES instead of inputs/canvases
+        if (isGeneratingPdf) {
             const staticStyle = {
                 ...commonStyle,
                 // Ensure the static text aligns nicely
@@ -134,6 +143,17 @@ export const DraggableField: React.FC<DraggableFieldProps> = ({
             const commonClasses = "px-1 bg-transparent text-sm text-black border border-transparent";
 
             switch (field.type) {
+                case 'signature':
+                    // Render as IMAGE so html2canvas captures it reliably
+                    const sigSrc = typeof field.value === 'string' && field.value.startsWith('data:') ? field.value : null;
+                    return (
+                        <div className="border border-gray-400 bg-white/50 relative" style={{ width: '250px', height: '100px' }}>
+                            <div className="absolute top-0 left-0 text-xs text-gray-500 p-1 pointer-events-none">Sign Here</div>
+                            {sigSrc && (
+                                <img src={sigSrc} alt="Signature" className="w-full h-full object-contain" />
+                            )}
+                        </div>
+                    );
                 case 'checkbox':
                     // Checkboxes render okay usually, but let's keep it input for now or swap if needed
                     return (
@@ -209,7 +229,11 @@ export const DraggableField: React.FC<DraggableFieldProps> = ({
                             ref={sigPad}
                             penColor='black'
                             canvasProps={{ className: 'w-full h-full' }}
-                            onEnd={() => onChangeValue(field.id, "SIGNED")}
+                            onEnd={() => {
+                                if (sigPad.current) {
+                                    onChangeValue(field.id, sigPad.current.toDataURL());
+                                }
+                            }}
                         />
                     </div>
                 );
