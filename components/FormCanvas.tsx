@@ -17,8 +17,10 @@ export const FormCanvas: React.FC<FormCanvasProps> = ({ formDef, onSaveConfig })
     const [fields, setFields] = useState<FieldConfig[]>(formDef.defaultFields);
     // const [isEditMode, setIsEditMode] = useState(false); // Edit mode functionality removed
     // const isEditMode = false; // Forced to false
+    // const isEditMode = false; // Forced to false
     const containerRef = useRef<HTMLDivElement>(null);
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+    const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
     // Drive Integration
     const { initClient, login, uploadFile, isUploading } = useGoogleDrive();
@@ -78,12 +80,15 @@ export const FormCanvas: React.FC<FormCanvasProps> = ({ formDef, onSaveConfig })
         if (!containerRef.current) return null;
 
         try {
+            setIsGeneratingPdf(true); // START PDF MODE: Renders divs instead of inputs
             await new Promise(r => setTimeout(r, 100)); // wait for render
 
             const canvas = await html2canvas(containerRef.current, {
                 scale: 2,
                 useCORS: true,
             });
+
+            setIsGeneratingPdf(false); // END PDF MODE
 
             const imgData = canvas.toDataURL('image/png');
             const pdf = new jsPDF({
@@ -186,7 +191,10 @@ export const FormCanvas: React.FC<FormCanvasProps> = ({ formDef, onSaveConfig })
                                 field={field}
                                 containerWidth={dimensions.width}
                                 containerHeight={dimensions.height}
+                                containerWidth={dimensions.width}
+                                containerHeight={dimensions.height}
                                 isEditMode={false} // Permanently disable edit mode for fields
+                                isGeneratingPdf={isGeneratingPdf} // Pass the PDF generation state
                                 onUpdatePosition={updateFieldPos}
                                 onUpdateSize={updateFieldSize}
                                 onRemove={removeField}

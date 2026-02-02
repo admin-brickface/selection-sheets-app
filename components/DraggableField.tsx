@@ -12,6 +12,7 @@ interface DraggableFieldProps {
     containerWidth: number;
     containerHeight: number;
     isEditMode: boolean;
+    isGeneratingPdf?: boolean;
     onUpdatePosition: (id: string, x: number, y: number) => void;
     onUpdateSize?: (id: string, w: number, h: number) => void;
     onRemove: (id: string) => void;
@@ -23,6 +24,7 @@ export const DraggableField: React.FC<DraggableFieldProps> = ({
     containerWidth,
     containerHeight,
     isEditMode,
+    isGeneratingPdf = false,
     onUpdatePosition,
     onUpdateSize,
     onRemove,
@@ -116,8 +118,9 @@ export const DraggableField: React.FC<DraggableFieldProps> = ({
             minWidth: '20px',
         };
 
-        // For PDF generation stability, we render DIVs instead of INPUTs when not in edit mode
-        if (!isEditMode) {
+
+        // For PDF generation stability, we render DIVs instead of INPUTs
+        if (isGeneratingPdf) {
             const staticStyle = {
                 ...commonStyle,
                 // Ensure the static text aligns nicely
