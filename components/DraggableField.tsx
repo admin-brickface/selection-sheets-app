@@ -116,6 +116,63 @@ export const DraggableField: React.FC<DraggableFieldProps> = ({
             minWidth: '20px',
         };
 
+        // For PDF generation stability, we render DIVs instead of INPUTs when not in edit mode
+        if (!isEditMode) {
+            const staticStyle = {
+                ...commonStyle,
+                // Ensure the static text aligns nicely
+                height: field.type === 'textarea' ? `${heightPx}px` : 'auto',
+                minHeight: field.type === 'textarea' ? 'auto' : '24px', // Ensure it has some height
+            };
+
+            const commonClasses = "px-1 bg-transparent text-sm text-black border border-transparent";
+
+            switch (field.type) {
+                case 'checkbox':
+                    // Checkboxes render okay usually, but let's keep it input for now or swap if needed
+                    return (
+                        <input
+                            type="checkbox"
+                            className="w-6 h-6 border-2 border-gray-600 rounded checked:bg-blue-600 appearance-none flex items-center justify-center after:content-['✓'] after:text-white after:hidden checked:after:block"
+                            checked={!!field.value}
+                            readOnly
+                        />
+                    );
+                case 'signature':
+                    // Already a div-based component
+                    return (
+                        <div className="border border-gray-400 bg-white/50 relative" style={{ width: '250px', height: '100px' }}>
+                            {field.value === "SIGNED" && (
+                                <div className="absolute inset-0 flex items-center justify-center font-script text-3xl">
+                                    Signed
+                                </div>
+                            )}
+                        </div>
+                    );
+                case 'textarea':
+                    return (
+                        <div
+                            className={`${commonClasses} whitespace-pre-wrap leading-tight`}
+                            style={staticStyle}
+                        >
+                            {field.value as string}
+                        </div>
+                    );
+                case 'date':
+                case 'text':
+                default:
+                    return (
+                        <div
+                            className={`${commonClasses} whitespace-nowrap overflow-hidden flex items-center`}
+                            style={staticStyle}
+                        >
+                            {field.value as string}
+                        </div>
+                    );
+            }
+        }
+
+        // EDIT MODE: Render actual inputs
         switch (field.type) {
             case 'checkbox':
                 return (
@@ -124,7 +181,6 @@ export const DraggableField: React.FC<DraggableFieldProps> = ({
                         className="w-6 h-6 border-2 border-gray-600 rounded checked:bg-blue-600 cursor-pointer"
                         checked={!!field.value}
                         onChange={(e) => onChangeValue(field.id, e.target.checked)}
-                        disabled={isEditMode}
                     />
                 );
             case 'date':
@@ -135,7 +191,6 @@ export const DraggableField: React.FC<DraggableFieldProps> = ({
                         style={{ width: '130px' }}
                         value={field.value as string || ''}
                         onChange={(e) => onChangeValue(field.id, e.target.value)}
-                        disabled={isEditMode}
                     />
                 );
             case 'signature':
@@ -154,10 +209,9 @@ export const DraggableField: React.FC<DraggableFieldProps> = ({
                     <textarea
                         className="border border-transparent hover:border-gray-300 p-1 bg-transparent text-sm resize-none focus:bg-white/90 focus:border-blue-500 outline-none text-black leading-tight"
                         style={{ ...commonStyle, height: `${heightPx}px` }}
-                        placeholder={isEditMode ? field.label : ''}
+                        placeholder={field.label}
                         value={field.value as string || ''}
                         onChange={(e) => onChangeValue(field.id, e.target.value)}
-                        readOnly={isEditMode}
                     />
                 );
             case 'text':
@@ -165,12 +219,11 @@ export const DraggableField: React.FC<DraggableFieldProps> = ({
                 return (
                     <input
                         type="text"
-                        className="border border-transparent hover:border-gray-300 px-1 py-1 leading-normal bg-transparent text-sm focus:bg-white/90 focus:border-blue-500 outline-none text-black w-full h-full"
+                        className="border border-transparent hover:border-gray-300 px-1 bg-transparent text-sm focus:bg-white/90 focus:border-blue-500 outline-none text-black w-full"
                         style={commonStyle}
-                        placeholder={isEditMode ? field.label : ''}
+                        placeholder={field.label}
                         value={field.value as string || ''}
                         onChange={(e) => onChangeValue(field.id, e.target.value)}
-                        readOnly={isEditMode}
                     />
                 );
         }
