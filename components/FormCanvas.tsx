@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { FormDefinition, FieldConfig, FieldType } from '@/types/form';
 import { DraggableField } from './DraggableField';
 import { CloudUpload } from 'lucide-react';
-import html2canvas from 'html2canvas';
+import html2canvas from 'html2canvas-pro';
 import { jsPDF } from 'jspdf';
 import { useGoogleDrive } from '@/hooks/useGoogleDrive';
 
