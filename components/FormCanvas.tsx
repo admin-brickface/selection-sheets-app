@@ -191,8 +191,7 @@ export const FormCanvas: React.FC<FormCanvasProps> = ({ formDef, onSaveConfig })
                                 field={field}
                                 containerWidth={dimensions.width}
                                 containerHeight={dimensions.height}
-                                containerWidth={dimensions.width}
-                                containerHeight={dimensions.height}
+
                                 isEditMode={false} // Permanently disable edit mode for fields
                                 isGeneratingPdf={isGeneratingPdf} // Pass the PDF generation state
                                 onUpdatePosition={updateFieldPos}
