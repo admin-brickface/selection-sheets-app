@@ -165,7 +165,7 @@ export const DraggableField: React.FC<DraggableFieldProps> = ({
                 return (
                     <input
                         type="text"
-                        className="border border-transparent hover:border-gray-300 px-1 bg-transparent text-sm focus:bg-white/90 focus:border-blue-500 outline-none text-black"
+                        className="border border-transparent hover:border-gray-300 px-1 py-1 leading-normal bg-transparent text-sm focus:bg-white/90 focus:border-blue-500 outline-none text-black w-full h-full"
                         style={commonStyle}
                         placeholder={isEditMode ? field.label : ''}
                         value={field.value as string || ''}

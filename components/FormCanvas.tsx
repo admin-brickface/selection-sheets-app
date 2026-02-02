@@ -114,7 +114,7 @@ export const FormCanvas: React.FC<FormCanvasProps> = ({ formDef, onSaveConfig })
 
         // Replace slashes with dashes for better filename compatibility
         const dateStr = new Date().toLocaleDateString('en-US').replace(/\//g, '-');
-        const fileName = `${customerName} - ${dateStr}.pdf`;
+        const fileName = `${customerName} - ${formDef.name} - ${dateStr}.pdf`;
 
         try {
             console.log("Attempting login...");
