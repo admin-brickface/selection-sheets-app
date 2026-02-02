@@ -170,7 +170,7 @@ export const FormCanvas: React.FC<FormCanvasProps> = ({ formDef, onSaveConfig })
                     ref={containerRef}
                     className="relative bg-white shadow-lg select-none"
                     style={{
-                        maxWidth: '100%',
+                        minWidth: '1000px', // Force minimum width for readability on mobile
                     }}
                 >
                     <img

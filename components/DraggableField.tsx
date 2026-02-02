@@ -212,7 +212,6 @@ export const DraggableField: React.FC<DraggableFieldProps> = ({
                     <textarea
                         className="border border-transparent hover:border-gray-300 p-1 bg-transparent text-sm resize-none focus:bg-white/90 focus:border-blue-500 outline-none text-black leading-tight"
                         style={{ ...commonStyle, height: `${heightPx}px` }}
-                        placeholder={field.label}
                         value={field.value as string || ''}
                         onChange={(e) => onChangeValue(field.id, e.target.value)}
                     />
@@ -224,7 +223,6 @@ export const DraggableField: React.FC<DraggableFieldProps> = ({
                         type="text"
                         className="border border-transparent hover:border-gray-300 px-1 bg-transparent text-sm focus:bg-white/90 focus:border-blue-500 outline-none text-black w-full"
                         style={commonStyle}
-                        placeholder={field.label}
                         value={field.value as string || ''}
                         onChange={(e) => onChangeValue(field.id, e.target.value)}
                     />
