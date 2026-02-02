@@ -120,8 +120,10 @@ export const DraggableField: React.FC<DraggableFieldProps> = ({
         };
 
 
+
         // For PDF generation stability, we render DIVs instead of INPUTs
-        if (isGeneratingPdf) {
+        // We exclude 'signature' because unmounting the canvas loses the drawing.
+        if (isGeneratingPdf && field.type !== 'signature') {
             const staticStyle = {
                 ...commonStyle,
                 // Ensure the static text aligns nicely
