@@ -31,6 +31,7 @@ export const DraggableField: React.FC<DraggableFieldProps> = ({
     onChangeValue
 }) => {
     const nodeRef = useRef(null);
+    const sigPad = useRef<SignatureCanvas>(null);
 
     // Calculate pixel position from percentage
     const initialX = (field.x / 100) * containerWidth;
@@ -200,7 +201,18 @@ export const DraggableField: React.FC<DraggableFieldProps> = ({
                 return (
                     <div className="border border-gray-400 bg-white/50 relative" style={{ width: '250px', height: '100px' }}>
                         <div className="absolute top-0 left-0 text-xs text-gray-500 p-1 pointer-events-none">Sign Here</div>
+                        <button
+                            className="absolute top-0 right-0 text-xs bg-gray-200 hover:bg-gray-300 text-gray-600 px-1 rounded z-20"
+                            onClick={(e) => {
+                                e.stopPropagation(); // prevent drag if any
+                                sigPad.current?.clear();
+                                onChangeValue(field.id, "");
+                            }}
+                        >
+                            Clear
+                        </button>
                         <SignatureCanvas
+                            ref={sigPad}
                             penColor='black'
                             canvasProps={{ className: 'w-full h-full' }}
                             onEnd={() => onChangeValue(field.id, "SIGNED")}
