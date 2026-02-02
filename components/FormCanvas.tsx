@@ -165,7 +165,7 @@ export const FormCanvas: React.FC<FormCanvasProps> = ({ formDef, onSaveConfig })
             </div>
 
             {/* Canvas */}
-            <div className="w-full overflow-auto bg-gray-100 flex justify-center p-4">
+            <div className="w-full overflow-auto bg-gray-100 flex justify-start p-4">
                 <div
                     ref={containerRef}
                     className="relative bg-white shadow-lg select-none"

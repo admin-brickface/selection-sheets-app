@@ -244,7 +244,7 @@ export const DraggableField: React.FC<DraggableFieldProps> = ({
                     top: `${field.y}%`,
                     pointerEvents: 'auto'
                 }}
-                className="flex items-start group touch-none relative"
+                className="flex items-start group relative"
             >
                 {renderInput()}
             </div>
