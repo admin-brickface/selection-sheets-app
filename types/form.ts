@@ -393,8 +393,8 @@ export const FORM_DEFS: FormDefinition[] = [
                 "id": "78376db0-3c2a-486b-8553-0c7c58687515",
                 "type": "checkbox",
                 "label": "New checkbox",
-                "x": 44.84662576687117,
-                "y": 33.89830508474576,
+                "x": 45.14662576687117,
+                "y": 34.105487405187745,
                 "width": 30,
                 "value": ""
             },
@@ -402,8 +402,8 @@ export const FORM_DEFS: FormDefinition[] = [
                 "id": "71a1be2f-3da6-490c-978a-7d10cd885716",
                 "type": "checkbox",
                 "label": "New checkbox",
-                "x": 51.717791411042946,
-                "y": 33.89830508474576,
+                "x": 52.01779141104295,
+                "y": 34.10548740518775,
                 "width": 30,
                 "value": ""
             },
