@@ -15,9 +15,7 @@ interface FormCanvasProps {
 
 export const FormCanvas: React.FC<FormCanvasProps> = ({ formDef, onSaveConfig }) => {
     const [fields, setFields] = useState<FieldConfig[]>(formDef.defaultFields);
-    // const [isEditMode, setIsEditMode] = useState(false); // Edit mode functionality removed
-    // const isEditMode = false; // Forced to false
-    // const isEditMode = false; // Forced to false
+    const [isEditMode, setIsEditMode] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
     const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
@@ -30,11 +28,16 @@ export const FormCanvas: React.FC<FormCanvasProps> = ({ formDef, onSaveConfig })
         initClient().then(() => setIsDriveReady(true)).catch(console.error);
     }, [initClient]);
 
-    // Sync fields when formDef changes
+    // Sync fields when formDef changes, but ONLY if we haven't already edited them in this session if we were using a global store.
+    // Since we are strictly strictly modifying the imported object (in-memory persistence), we just need to ensure we write back to it.
     useEffect(() => {
         setFields(formDef.defaultFields);
-    }, [formDef.defaultFields, formDef.id]);
+    }, [formDef, formDef.id]);
 
+    // PERSISTENCE: Auto-save to the in-memory definition whenever fields change
+    useEffect(() => {
+        formDef.defaultFields = fields;
+    }, [fields, formDef]);
 
     useEffect(() => {
         if (!containerRef.current) return;
@@ -56,7 +59,18 @@ export const FormCanvas: React.FC<FormCanvasProps> = ({ formDef, onSaveConfig })
     }, [formDef.imagePath]);
 
 
-
+    const addField = (type: FieldType) => {
+        const newField: FieldConfig = {
+            id: crypto.randomUUID(),
+            type,
+            label: `New ${type}`,
+            x: 50 - 15, // Center-ish
+            y: 50 - 5,
+            width: type === 'checkbox' || type === 'date' ? 30 : 30, // Default width
+            value: type === 'checkbox' ? false : ''
+        };
+        setFields([...fields, newField]);
+    };
 
     const updateFieldPos = (id: string, x: number, y: number) => {
         setFields(fields.map(f => f.id === id ? { ...f, x, y } : f));
@@ -74,6 +88,10 @@ export const FormCanvas: React.FC<FormCanvasProps> = ({ formDef, onSaveConfig })
         setFields(fields.filter(f => f.id !== id));
     };
 
+    const handleLogConfig = () => {
+        console.log(JSON.stringify(fields, null, 4));
+        alert("Configuration logged to console! (Press F12 to view)");
+    };
 
 
     const generatePDFBlob = async () => {
@@ -152,7 +170,11 @@ export const FormCanvas: React.FC<FormCanvasProps> = ({ formDef, onSaveConfig })
         <div className="flex flex-col gap-4 w-full">
             {/* Toolbar */}
             {/* Toolbar */}
-            <div className="p-4 bg-white rounded-lg shadow flex flex-wrap gap-2 items-center justify-end sticky top-0 z-50">
+            <div className="p-4 bg-white rounded-lg shadow flex flex-wrap gap-2 items-center justify-between sticky top-0 z-50">
+                <div className="flex gap-2 items-center">
+                    <span className="font-bold text-gray-700">{formDef.name}</span>
+                </div>
+
                 <div className="flex gap-2">
                     <button
                         onClick={handleUploadDrive}
@@ -192,7 +214,7 @@ export const FormCanvas: React.FC<FormCanvasProps> = ({ formDef, onSaveConfig })
                                 containerWidth={dimensions.width}
                                 containerHeight={dimensions.height}
 
-                                isEditMode={false} // Permanently disable edit mode for fields
+                                isEditMode={isEditMode}
                                 isGeneratingPdf={isGeneratingPdf} // Pass the PDF generation state
                                 onUpdatePosition={updateFieldPos}
                                 onUpdateSize={updateFieldSize}
@@ -202,16 +224,18 @@ export const FormCanvas: React.FC<FormCanvasProps> = ({ formDef, onSaveConfig })
                         ))}
 
                         {/* Static Footer Overlay - Signature & Date placeholders */}
-                        <div className="absolute bottom-10 left-0 w-full px-16 flex justify-between pointer-events-none select-none">
-                            <div className="flex flex-col items-center w-1/3">
-                                <div className="border-b-2 border-black w-full mb-1"></div>
-                                <span className="font-bold text-sm text-black">Customer's Signature</span>
+                        {formDef.id !== 'contract-review' && (
+                            <div className="absolute bottom-10 left-0 w-full px-16 flex justify-between pointer-events-none select-none">
+                                <div className="flex flex-col items-center w-1/3">
+                                    <div className="border-b-2 border-black w-full mb-1"></div>
+                                    <span className="font-bold text-sm text-black">Customer's Signature</span>
+                                </div>
+                                <div className="flex flex-col items-center w-1/4">
+                                    <div className="border-b-2 border-black w-full mb-1"></div>
+                                    <span className="font-bold text-sm text-black">Date</span>
+                                </div>
                             </div>
-                            <div className="flex flex-col items-center w-1/4">
-                                <div className="border-b-2 border-black w-full mb-1"></div>
-                                <span className="font-bold text-sm text-black">Date</span>
-                            </div>
-                        </div>
+                        )}
                     </div>
                 </div>
             </div>
