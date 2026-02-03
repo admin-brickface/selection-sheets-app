@@ -3640,9 +3640,9 @@ export const FORM_DEFS: FormDefinition[] = [
                 "label": "New textarea",
                 "x": 42,
                 "y": 42.1445929526124,
-                "width": 15.899999999999997,
+                "width": 17.499999999999996,
                 "value": "",
-                "height": 9.125151883353585
+                "height": 8.76063183475091
             },
             {
                 "id": "8cca2e67-ebd7-490a-9844-29235f26597b",
